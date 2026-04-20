@@ -4,6 +4,18 @@ import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where, s
 // CREATE: Save an article
 export const saveBookmark = async (userId, article) => {
   try {
+    // 1. Check if already bookmarked by this user
+    const q = query(
+      collection(db, "bookmarks"), 
+      where("userId", "==", userId),
+      where("title", "==", article.title) // Using title as a unique anchor if id differs between sources
+    );
+    const existing = await getDocs(q);
+    
+    if (!existing.empty) {
+      throw new Error("ALREADY_BOOKMARKED");
+    }
+
     const docRef = await addDoc(collection(db, "bookmarks"), {
       userId,
       ...article,
@@ -22,7 +34,15 @@ export const getBookmarks = async (userId) => {
   try {
     const q = query(collection(db, "bookmarks"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Ensure the document ID is preserved and doesn't get overwritten by article.id
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return { 
+        ...data, 
+        id: doc.id, 
+        articleId: data.id // preserve the original article id
+      };
+    });
   } catch (error) {
     console.error("Error fetching bookmarks:", error);
     return [];

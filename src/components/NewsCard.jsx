@@ -23,7 +23,11 @@ export default function NewsCard({ article, index }) {
       await saveBookmark(user.uid, article);
       alert("Article bookmarked!");
     } catch(err) {
-      alert("Failed to bookmark.");
+      if (err.message === "ALREADY_BOOKMARKED") {
+        alert("This article is already in your bookmarks!");
+      } else {
+        alert("Failed to bookmark.");
+      }
     }
   };
 

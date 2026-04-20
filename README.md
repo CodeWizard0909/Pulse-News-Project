@@ -84,8 +84,8 @@ npm run build
 ---
 
 ## 🌐 Deployment
-This project is configured for easy deployment on **Vercel** or **Netlify**:
-- `vercel.json` and `netlify.toml` are included for SPA routing.
+This project is configured for easy deployment on **Vercel**:
+- `vercel.json` are included for SPA routing.
 - Ensure you add the Environment Variables in your hosting dashboard.
 
 ---
